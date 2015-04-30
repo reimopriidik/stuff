@@ -45,6 +45,8 @@ Thumbs.db
 */tmp/
 */users/
 users/*
+files/*
 *.pyc
 .directory
 .gitignore~
+*~
