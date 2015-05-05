@@ -25,12 +25,34 @@ def mergeFecFiles(files):
       for k, v in data.items():
          if v: 
             merged[k].extend(v)
-   
-   writeMergedCsv(merged)
+   # writeRowCsv(merged)
+   writeDictCsv(merged)
 
-def writeMergedCsv(merged):
-   with open('merged.csv', 'r+') as csvfile:
-      csvWriter = csv.writer(csvfile, lineterminator='\n')
+def writeDictCsv(merged):
+   result = {}
+   
+   for otu in merged:
+      result[otu] = {}
+
+   for i, header in enumerate(merged['headers']):
+      for otu in merged:
+         try:
+            if otu:
+               result[otu][header] = merged[otu][i]
+         except Exception as e:
+            pass
+
+   with open('dictWriter.csv', 'w') as csvfile:
+      fieldnames = sorted(merged['headers'])
+      writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+      writer.writeheader()
+      for k in sorted(result):
+         writer.writerow(result[k])
+
+def writeRowCsv(merged):
+   # merged = rowsToDict(merged)
+   with open('merged.csv', 'wb') as csvfile:
+      csvWriter = csv.writer(csvfile)
       csvWriter.writerow(merged['headers'])
       for k in sorted(merged):
          if k != 'headers' and merged[k]:
@@ -42,12 +64,6 @@ if __name__ == '__main__':
    timerStart = timeit.default_timer()
    
    files = []
-   #Define files
-   # files = [
-   #    'files/FECAL_IMC.final.an.unique_list.0.03.subsample_size5971.0.03.Sx.1_10x-IMC10_11_48h_Sx.1_10x.txt',
-   #    'files/FECAL_IMC.final.an.unique_list.0.03.subsample_size5971.0.03.S5.2_10x-IMC10_35_48h_S5.2_10x.txt', 
-   #    'files/FECAL_IMC.final.an.unique_list.0.03.subsample_size5971.0.03.S3.1_10x-IMC10_21_48h_S3.1_10x.txt'
-   # ]
 
    try:
       #Get all .txt files in working dir
@@ -55,10 +71,11 @@ if __name__ == '__main__':
          files.append(txtFile)   
       mergeFecFiles(files)
    except Exception, e:
-      print 'Failed to run', e
+      print 'Could not open files in dir. Exception: ', e
    finally:
       timerStop = timeit.default_timer()
       if files:
          for i, f in enumerate(files):
             print i+1, ' - ', f
          print i+1, 'files merged in ', round(timerStop - timerStart, 3), 's'
+
