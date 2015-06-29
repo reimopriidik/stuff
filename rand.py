@@ -7,11 +7,11 @@ import timeit
 
 start = timeit.default_timer()
 
-size=2
-chars=string.ascii_uppercase + string.digits
-rows = 100000
+rows = 100000 #Number of rows 
+size=5 #Data length in row
 
-with open('random2.csv', 'w') as csvfile:
+chars=string.ascii_uppercase + string.digits
+with open('rand.csv', 'w') as csvfile:
 	fieldnames = ['id', 'rand']
 	writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 	writer.writeheader()
